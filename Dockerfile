@@ -30,8 +30,11 @@ RUN mkdir -p /app/model /app/nltk_data /output /app/deberta_model
 
 # 复制应用代码
 COPY submit.py .
-COPY model/ /app/model/
+# just model *.pth file
+COPY model/ /app/model/ 
+
 COPY nltk_data/ /app/nltk_data/
+# origin_modle
 COPY deberta_model/ /app/deberta_model/
 
 # 设置入口点
