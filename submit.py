@@ -8,8 +8,8 @@ finetune_modernbert_scl.py - 使用监督对比学习训练现代BERT模型(DeBE
 import json
 import os
 # os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
-os.environ["TRANSFORMERS_OFFLINE"] = "1"  # 强制离线模式
-os.environ["HF_DATASETS_OFFLINE"] = "1"   # 禁用数据集下载
+# os.environ["TRANSFORMERS_OFFLINE"] = "1"  # 强制离线模式
+# os.environ["HF_DATASETS_OFFLINE"] = "1"   # 禁用数据集下载
 import argparse
 import pandas as pd
 import numpy as np
@@ -29,6 +29,7 @@ from tira.third_party_integrations import get_output_directory
 
 # 配置日志
 model_name = "/app/deberta_model"  # 预训练模型名称
+# model_name = "microsoft/deberta-base"
 max_length = 128  # 最大序列长度
 projection_dim = 128  # 对比学习投影维度
 
@@ -196,7 +197,7 @@ class SupervisedContrastiveLoss(nn.Module):
 class StyleChangeModelSCL(nn.Module):
     def __init__(self, deberta_model='microsoft/deberta-base', proj_dim=128):
         super().__init__()
-        self.deberta = DebertaModel.from_pretrained(deberta_model)
+        self.deberta = DebertaModel.from_pretrained(deberta_model,force_download=True)
         hidden_size = self.deberta.config.hidden_size
         
         # 分类器
@@ -374,7 +375,7 @@ def save_predictions(predictions, output_dir, subtask):
 @click.option('--output', default=Path(get_output_directory(str(Path(__file__).parent)), help='The file where predictions should be written to.'))
 @click.option('--model-dir', default='/app/model', help='Directory containing model files')
 def main(dataset, output, model_dir):
-    tokenizer = DebertaTokenizer.from_pretrained(model_name)
+    tokenizer = DebertaTokenizer.from_pretrained(model_name,force_download=True)
     model = StyleChangeModelSCL(model_name, proj_dim=projection_dim).to(device)
     tira = Client()
     
