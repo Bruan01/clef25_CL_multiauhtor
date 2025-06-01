@@ -10,7 +10,7 @@ WORKDIR /app
 ENV NLTK_DATA=/app/nltk_data
 ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=1
-设置镜像源
+# 设置镜像源
 ENV HF_ENDPOINT=https://hf-mirror.com
 
 
