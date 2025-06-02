@@ -28,8 +28,7 @@ from tira.rest_api_client import Client
 from tira.third_party_integrations import get_output_directory
 
 # 配置日志
-model_name = "/app/deberta_model"  # 预训练模型名称
-# model_name = "microsoft/deberta-base"
+model_name = "microsoft/deberta-base"
 max_length = 128  # 最大序列长度
 projection_dim = 128  # 对比学习投影维度
 
@@ -68,13 +67,6 @@ logger.addHandler(console_handler)
 
 logger.info(f"日志将保存到: {log_file}")
 # 设置环境变量
-
-# os.environ['NLTK_DATA'] = "https://mirrors.tuna.tsinghua.edu.cn/nltk_data/"
-
-# 设置NLTK数据路径
-nltk.data.path = []
-nltk.data.path.append('/app/nltk_data')
-logger.info(f"当前NLTK搜索路径：{nltk.data.path}")
 
 # 设置设备
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -197,7 +189,7 @@ class SupervisedContrastiveLoss(nn.Module):
 class StyleChangeModelSCL(nn.Module):
     def __init__(self, deberta_model='microsoft/deberta-base', proj_dim=128):
         super().__init__()
-        self.deberta = DebertaModel.from_pretrained(deberta_model,force_download=True)
+        self.deberta = DebertaModel.from_pretrained(deberta_model)
         hidden_size = self.deberta.config.hidden_size
         
         # 分类器
@@ -375,7 +367,7 @@ def save_predictions(predictions, output_dir, subtask):
 @click.option('--output', default=Path(get_output_directory(str(Path(__file__).parent)), help='The file where predictions should be written to.'))
 @click.option('--model-dir', default='/app/model', help='Directory containing model files')
 def main(dataset, output, model_dir):
-    tokenizer = DebertaTokenizer.from_pretrained(model_name,force_download=True)
+    tokenizer = DebertaTokenizer.from_pretrained(model_name)
     model = StyleChangeModelSCL(model_name, proj_dim=projection_dim).to(device)
     tira = Client()
     
@@ -389,7 +381,7 @@ def main(dataset, output, model_dir):
         
         # Load model for this subtask
         model_path = os.path.join(model_dir, f"{subtask}.pth") 
-        checkpoint = torch.load(model_path)
+        checkpoint = torch.load(model_path, weights_only=False)
         model.load_state_dict(checkpoint['model_state_dict'])
         
         # Filter data for current subtask
