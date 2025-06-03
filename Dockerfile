@@ -12,10 +12,13 @@ ENV PIP_NO_CACHE_DIR=1
 # 复制并安装Python依赖
 RUN apt-get update && apt-get install -y python3-pip
 COPY requirements.txt .
+RUN pip3 install --break-system-packages torch==2.6.0
 RUN pip3 install --break-system-packages -r requirements.txt
 
 # just model *.pth file
-COPY model/ /app/model/ 
+COPY model/easy.pth /app/model/ 
+COPY model/medium.pth /app/model/ 
+COPY model/hard.pth /app/model/ 
 
 RUN python3 -c "import nltk; nltk.download('punkt_tab');"
 
