@@ -19,7 +19,6 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from transformers import DebertaTokenizer, DebertaModel
 from tqdm import tqdm
-from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
 import nltk
 import logging
 import click
@@ -298,6 +297,7 @@ def evaluate(model, val_loader, criterion_cls, device):
             all_labels.extend(labels.cpu().numpy())
     
     # 计算评估指标
+    from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
     accuracy = accuracy_score(all_labels, all_preds)
     f1 = f1_score(all_labels, all_preds)
     precision = precision_score(all_labels, all_preds, zero_division=0)

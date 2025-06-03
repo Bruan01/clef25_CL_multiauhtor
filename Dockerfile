@@ -22,7 +22,6 @@ COPY model/hard.pth /app/model/
 
 RUN python3 -c "import nltk; nltk.download('punkt_tab');"
 
-
 ENV HF_HUB_OFFLINE=1
 
 # 复制应用代码
